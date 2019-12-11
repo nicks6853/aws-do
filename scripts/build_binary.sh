@@ -2,6 +2,8 @@
 
 set -e
 
+npm install
+
 echo "Building Binary of aws-do"
 if [ ! -d "./bin" ]; then
     echo "Creating bin/ dir"

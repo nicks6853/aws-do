@@ -1,19 +1,32 @@
 const rds = require('./rds');
+const commander = require('commander');
 
-const args = {}
-process.argv.forEach((val, index, array) => {
-    if (index % 2 == 0)
-        args[val] = null;
-    else
-        args[array[index-1]] = val;
-});
 
 const main = async () => {
-    await rds.createDBSnapshot(args['--db-id']);
-}
+    commander
+        .version('1.0.0')
+        .description('do');
 
-if (!args['--db-id']) {
-    console.error("Please enter a value for --db-id");
-    return;
-}
+    commander
+        .command('db-snapshot <dbInstanceIdentifier>')
+        .description('Take an RDS Snapshot')
+        .action(async (dbInstanceIdentifier) => {
+            await rds.createDBSnapshot(dbInstanceIdentifier);
+        });
+    commander
+        .command('dbs')
+        .description('List RDS Instances')
+        .action(() => {
+            rds.describeDBInstances();
+        });
+    commander
+        .command('db <dbInstanceIdentifier>')
+        .description('Describe RDS Instance')
+        .action((dbInstanceIdentifier) => {
+            rds.describeDBInstance(dbInstanceIdentifier);
+        });
+
+    commander.parse(process.argv);
+};
+
 main();

@@ -8,7 +8,7 @@ const rds = new AWS.RDS({region: config.region});
 /**
  * List all the RDS Instances.
  */
-const getInstances = () => {
+const describeDBInstances = () => {
     rds.describeDBInstances().promise().then((data) => {
         console.table(
             data['DBInstances'].map(rdsInstance => {
@@ -30,7 +30,7 @@ const getInstances = () => {
  * Get the attributes of an RDS Instance.
  * @param {String} dbInstanceIdentifier DB Instance Identifier
  */
-const describeInstance = (dbInstanceIdentifier) => {
+const describeDBInstance = (dbInstanceIdentifier) => {
     let params = {
         DBInstanceIdentifier: dbInstanceIdentifier,
     }
@@ -65,7 +65,7 @@ const createDBSnapshot = async (dbInstanceIdentifier) => {
     }
 
     await rds.createDBSnapshot(params).promise().then(async (data) => {
-        let status = await getDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
+        let status = await describeDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
         process.stdout.write(`Creating DB Snapshot: ${dbSnapshotIdentifier}`);
         
         while (status !== 'available') {
@@ -75,7 +75,7 @@ const createDBSnapshot = async (dbInstanceIdentifier) => {
                 return;
             }
             await utils.sleep(3000);
-            status = await getDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
+            status = await describeDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
         }
     },
     (err) => {
@@ -88,7 +88,7 @@ const createDBSnapshot = async (dbInstanceIdentifier) => {
  * @param {String} dbInstanceIdentifier DB Instance Identifier
  * @param {String} dbSnapshotIdentifier DB Snapshot Identifier
  */
-const getDBSnapshotStatus = async (dbInstanceIdentifier, dbSnapshotIdentifier) => {
+const describeDBSnapshotStatus = async (dbInstanceIdentifier, dbSnapshotIdentifier) => {
     let params = {
         DBInstanceIdentifier: dbInstanceIdentifier,
         DBSnapshotIdentifier: dbSnapshotIdentifier,
@@ -105,7 +105,7 @@ const getDBSnapshotStatus = async (dbInstanceIdentifier, dbSnapshotIdentifier) =
 
 module.exports = {
     createDBSnapshot: createDBSnapshot,
-    describeInstance: describeInstance,
-    getDBSnapshotStatus: getDBSnapshotStatus,
-    getInstances: getInstances,
+    describeDBInstance: describeDBInstance,
+    describeDBInstances: describeDBInstances,
+    describeDBSnapshotStatus: describeDBSnapshotStatus,
 };

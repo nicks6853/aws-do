@@ -6,6 +6,7 @@
   "bin": "src/index.js",
   "dependencies": {
     "aws-sdk": "^2.587.0",
+    "commander": "^4.0.1",
     "uuid": "^3.3.3"
   },
   "devDependencies": {},

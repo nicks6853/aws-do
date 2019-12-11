@@ -1,5 +1,4 @@
 const rds = require('./rds');
-const auth = require('./auth');
 
 const args = {}
 process.argv.forEach((val, index, array) => {

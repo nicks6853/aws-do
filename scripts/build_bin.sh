@@ -3,13 +3,13 @@
 set -e
 
 echo "Building Binary of do"
-if ![ -d bin ]; then
+if [ ! -d "./bin" ]; then
     echo "Creating bin/ dir"
-    mkdir -f bin
+    mkdir bin
 fi
 
 cd bin
-rm "do"
+rm -f './do'
 pkg ../ --targets node12-macos-x64
 cd -
 echo "Done."

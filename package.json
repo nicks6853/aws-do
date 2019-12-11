@@ -1,5 +1,5 @@
 {
-  "name": "do",
+  "name": "aws-do",
   "version": "1.0.0",
   "description": "AWS CLI Tool",
   "main": "index.js",

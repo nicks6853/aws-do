@@ -9,10 +9,12 @@ process.argv.forEach((val, index, array) => {
         args[array[index-1]] = val;
 });
 
-
 const main = async () => {
-    await rds.createDBSnapshot('nbjobs-dev');
-    // console.log(await rds.getDBSnapshotStatus('nbjobs-stage', 'nbjobs-stage-6d9cee1a-0649-4ecb-a54a-299b9b5f8dc3'));
+    await rds.createDBSnapshot(argv['--db-id']);
 }
 
+if (!args['--db-id']) {
+    console.error("Please enter a value for --db-id");
+    return;
+}
 main();

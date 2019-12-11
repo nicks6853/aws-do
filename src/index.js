@@ -10,7 +10,7 @@ process.argv.forEach((val, index, array) => {
 });
 
 const main = async () => {
-    await rds.createDBSnapshot(argv['--db-id']);
+    await rds.createDBSnapshot(args['--db-id']);
 }
 
 if (!args['--db-id']) {

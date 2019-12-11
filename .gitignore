@@ -3,4 +3,5 @@ node_modules/
 .vscode
 
 # Other Stuff
+bin/
 .DS_Store

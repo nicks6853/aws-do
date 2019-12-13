@@ -73,7 +73,6 @@ const session = (instanceId) => {
         let instancePrivateIp = instance['PrivateIpAddress'];
         let username = process.env['USER'];
         let vpcId = instance['VpcId'];
-        console.log(instance);
         let params = {
             VpcIds: [ vpcId ],
         };
@@ -85,10 +84,8 @@ const session = (instanceId) => {
             if (err)
                 console.error(err.message);
         })
-        console.log(bastionPublicDNSName);
-        console.log(username);
-        console.log(cidrBlock);
-        var child = child_process.spawn('sshuttle', ['-r', `${username}@${bastionPublicDNSName}`, cidrBlock], {stdio: 'inherit'});
+
+        let child = child_process.spawn('sshuttle', ['-r', `${username}@${bastionPublicDNSName}`, cidrBlock], {stdio: 'inherit'});
         child.on('close', function () {
             console.log("Done");
         });

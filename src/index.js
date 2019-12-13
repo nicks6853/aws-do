@@ -5,7 +5,7 @@ const commander = require('commander');
 const main = async () => {
     commander
         .version('1.0.0')
-        .description('do');
+        .description('aws-do');
 
     commander
         .command('db-snapshot <dbInstanceIdentifier>')

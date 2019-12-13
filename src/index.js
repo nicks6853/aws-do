@@ -1,4 +1,5 @@
 const rds = require('./rds');
+const ssm = require('./ssm');
 const commander = require('commander');
 
 
@@ -14,16 +15,32 @@ const main = async () => {
             await rds.createDBSnapshot(dbInstanceIdentifier);
         });
     commander
-        .command('dbs')
+        .command('list-dbs')
         .description('List RDS Instances')
         .action(() => {
             rds.describeDBInstances();
         });
     commander
-        .command('db <dbInstanceIdentifier>')
+        .command('get-db <dbInstanceIdentifier>')
         .description('Describe RDS Instance')
         .action((dbInstanceIdentifier) => {
             rds.describeDBInstance(dbInstanceIdentifier);
+        });
+
+    /**
+     * SSM Functionalities
+     */
+    commander
+        .command('list-params')
+        .description('Retrieve Parameters from Parameter Store')
+        .action(() => {
+            ssm.getParameters();
+        });
+    commander
+        .command('get-param <parameterName>')
+        .description('Retrieve Parameter from Parameter Store')
+        .action((parameterName) => {
+            ssm.getParameter(parameterName);
         });
 
     commander.parse(process.argv);

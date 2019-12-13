@@ -1,3 +1,4 @@
+const ec2 = require('./ec2');
 const rds = require('./rds');
 const ssm = require('./ssm');
 const commander = require('commander');
@@ -8,6 +9,9 @@ const main = async () => {
         .version('1.0.0')
         .description('aws-do');
 
+    /**
+     * RDS Functionalities
+     */
     commander
         .command('db-snapshot <dbInstanceIdentifier>')
         .description('Take an RDS Snapshot')
@@ -41,6 +45,22 @@ const main = async () => {
         .description('Retrieve Parameter from Parameter Store')
         .action((parameterName) => {
             ssm.getParameter(parameterName);
+        });
+
+    /**
+     * EC2 Functionalities
+     */
+    commander
+        .command('list-instances')
+        .description('List EC2 Instances')
+        .action(() => {
+            ec2.getInstances();
+        });
+    commander
+        .command('get-instance <instanceName>')
+        .description('List EC2 Instances (Filtered)')
+        .action((instanceName) => {
+            ec2.getInstance(instanceName);
         });
 
     commander.parse(process.argv);

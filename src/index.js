@@ -62,6 +62,12 @@ const main = async () => {
         .action((instanceName) => {
             ec2.getInstance(instanceName);
         });
+    commander
+        .command('session <instanceId>')
+        .description('SSH into an instance')
+        .action((instanceId) => {
+            ec2.session(instanceId);
+        });
 
     commander.parse(process.argv);
 };

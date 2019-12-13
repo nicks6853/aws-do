@@ -1,1 +1,1 @@
-module.exports.region = "ca-central-1";
+module.exports.region = process.env["AWS_DEFAULT_REGION"];

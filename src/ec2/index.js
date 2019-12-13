@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const config = require('../../config');
 const utils = require('../utils');
+const child_process = require('child_process');
 
 const ec2 = new AWS.EC2({region: config.region});
 
@@ -11,10 +12,10 @@ const getInstances = () => {
     ec2.describeInstances().promise().then((data) => {
         const instances = new Array();
         data['Reservations'].map((reservation) => {
-            reservation['Instances'].map((instance) => {
+            reservation['Instances'].filter(instance => instance['State']['Name'] === "running").map((instance) => {
                 let instanceName = instance['Tags'].filter((item) => item['Key'] == 'Name')[0]['Value'];
                 instances.push({
-                    'Name': instanceName ? instanceName : null,
+                    'Name':  instanceName,
                     'InstanceId': instance['InstanceId'],
                     'InstanceType': instance['InstanceType'],
                     'PublicDnsName': instance['PublicDnsName'] ? instance['PublicDnsName'] : null,
@@ -60,7 +61,46 @@ const getInstance = (instanceName) => {
     });
 }
 
+const session = (instanceId) => {
+    let params = {
+        InstanceIds: [ instanceId ],
+    }
+
+    ec2.describeInstances(params).promise().then(async (data) => {
+        let bastionPublicDNSName = 'ec2-15-222-1-153.ca-central-1.compute.amazonaws.com';
+        let cidrBlock = null;
+        let instance = data['Reservations'][0]['Instances'][0];
+        let instancePrivateIp = instance['PrivateIpAddress'];
+        let username = process.env['USER'];
+        let vpcId = instance['VpcId'];
+        console.log(instance);
+        let params = {
+            VpcIds: [ vpcId ],
+        };
+        await ec2.describeVpcs(params).promise().then((data) =>{
+            cidrBlock = data['Vpcs'][0]['CidrBlock'];
+            console.log(cidrBlock);
+        },
+        (err) => {
+            if (err)
+                console.error(err.message);
+        })
+        console.log(bastionPublicDNSName);
+        console.log(username);
+        console.log(cidrBlock);
+        var child = child_process.spawn('sshuttle', ['-r', `${username}@${bastionPublicDNSName}`, cidrBlock], {stdio: 'inherit'});
+        child.on('close', function () {
+            console.log("Done");
+        });
+    },
+    (err) => {
+        if (err)
+            console.error(err.message);
+    });
+}
+
 module.exports = {
     getInstances: getInstances,
     getInstance: getInstance,
+    session: session,
 }

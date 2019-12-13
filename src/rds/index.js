@@ -22,7 +22,7 @@ const describeDBInstances = () => {
     },
     (err) => {
         if (err)
-            throw err;
+            console.error(err.message);
     });
 };
 
@@ -49,7 +49,8 @@ const describeDBInstance = (dbInstanceIdentifier) => {
         );
     },
     (err) => {
-        throw err;
+        if (err)
+            console.error(err.message);
     });
 };
 
@@ -98,7 +99,8 @@ const describeDBSnapshotStatus = async (dbInstanceIdentifier, dbSnapshotIdentifi
         status = data['DBSnapshots'][0]['Status'];
     },
     (err) => {
-        console.error(err.message);
+        if (err)
+            console.error(err.message);
     });
     return status;
 }

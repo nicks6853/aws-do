@@ -51,16 +51,10 @@ const main = async () => {
      * EC2 Functionalities
      */
     commander
-        .command('list-instances')
+        .command('list-instances [filter]')
         .description('List EC2 Instances')
-        .action(() => {
-            ec2.getInstances();
-        });
-    commander
-        .command('get-instance <instanceName>')
-        .description('List EC2 Instances (Filtered)')
-        .action((instanceName) => {
-            ec2.getInstance(instanceName);
+        .action((filter) => {
+            ec2.getInstances(filter);
         });
     commander
         .command('session <instanceId>')

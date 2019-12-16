@@ -3,7 +3,8 @@ const config = require('../../config');
 const utils = require('../utils');
 const child_process = require('child_process');
 
-const ec2 = new AWS.EC2({region: config.region});
+const ec2 = new AWS.EC2({ region: config.region });
+const ssm = new AWS.SSM({ region: config.region });
 
 /**
  * Filters the results of getInstances by tag:Name
@@ -40,37 +41,9 @@ const getInstances = (filter) => {
 }
 
 const session = (instanceId) => {
-    let params = {
-        InstanceIds: [ instanceId ],
-    }
-
-    ec2.describeInstances(params).promise().then(async (data) => {
-        let bastionPublicDNSName = 'ec2-15-222-1-153.ca-central-1.compute.amazonaws.com';
-        let cidrBlock = null;
-        let instance = data['Reservations'][0]['Instances'][0];
-        let instancePrivateIp = instance['PrivateIpAddress'];
-        let username = process.env['USER'];
-        let vpcId = instance['VpcId'];
-        let params = {
-            VpcIds: [ vpcId ],
-        };
-        await ec2.describeVpcs(params).promise().then((data) =>{
-            cidrBlock = data['Vpcs'][0]['CidrBlock'];
-            console.log(cidrBlock);
-        },
-        (err) => {
-            if (err)
-                console.error(err.message);
-        })
-
-        let child = child_process.spawn('sshuttle', ['-r', `${username}@${bastionPublicDNSName}`, cidrBlock], {stdio: 'inherit'});
-        child.on('close', function () {
-            console.log("Done");
-        });
-    },
-    (err) => {
-        if (err)
-            console.error(err.message);
+    let currentSession = child_process.spawn('aws', ['ssm', 'start-session', '--target', instanceId], { stdio: 'inherit' });
+    currentSession.on('close', (code) => {
+        console.log("Done.");
     });
 }
 

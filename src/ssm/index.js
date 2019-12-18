@@ -2,7 +2,7 @@ const AWS = require('aws-sdk');
 const config = require('../../config');
 const utils = require('../utils');
 
-const ssm = new AWS.SSM({region: config.region})
+const ssm = new AWS.SSM({region: config.region});
 
 /**
  * Retrieves info, including the value, of one parameter store item.
@@ -12,7 +12,7 @@ const getParameter = (parameterName) => {
     let params = {
         Name: parameterName,
         WithDecryption: true,
-    }
+    };
 
     ssm.getParameter(params).promise().then((data) => {
         console.table([{'Name': data['Parameter']['Name'], 'Type': data['Parameter']['Type'], 'Value': data['Parameter']['Value']}]);
@@ -20,18 +20,20 @@ const getParameter = (parameterName) => {
     (err) => {
         if (err)
             console.error(err.message);
-    })
-}
+    });
+};
 
 /**
  * List all parameter store items.
+ * Loop is necessary if there are more than 50 parameters.
+ * Cannot fetch more than 50 parameters at once from AWS.
  */
 const getParameters = async () => {
     let ssmParameters = new Array();
     nextToken = null;
     do {
         let params = {
-            MaxResults: 10,
+            MaxResults: 50,
             NextToken: nextToken,
         };
 

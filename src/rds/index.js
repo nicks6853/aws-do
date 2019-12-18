@@ -33,7 +33,7 @@ const describeDBInstances = () => {
 const describeDBInstance = (dbInstanceIdentifier) => {
     let params = {
         DBInstanceIdentifier: dbInstanceIdentifier,
-    }
+    };
     rds.describeDBInstances(params).promise().then((data) => {
         console.table(
             data['DBInstances'].map(rdsInstance => {
@@ -63,7 +63,7 @@ const createDBSnapshot = async (dbInstanceIdentifier) => {
     let params = {
         DBInstanceIdentifier: dbInstanceIdentifier,
         DBSnapshotIdentifier: dbSnapshotIdentifier,
-    }
+    };
 
     await rds.createDBSnapshot(params).promise().then(async (data) => {
         let status = await describeDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);

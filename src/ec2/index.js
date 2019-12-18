@@ -31,24 +31,23 @@ const getInstances = (filter) => {
         });
         instances.sort((a, b) => {
             return a['Name'].localeCompare(b['Name']);
-        })
+        });
         console.table(instances);
     },
     (err) => {
         if (err)
             console.error(err.message);
     });
-}
+};
 
 const session = (instanceId) => {
     let currentSession = child_process.spawn('aws', ['ssm', 'start-session', '--target', instanceId], { stdio: 'inherit' });
     currentSession.on('close', (code) => {
         console.log("Done.");
     });
-}
+};
 
 module.exports = {
     getInstances: getInstances,
-    // getInstance: getInstance,
     session: session,
-}
+};

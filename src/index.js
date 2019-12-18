@@ -37,8 +37,8 @@ const main = async () => {
     commander
         .command('list-params')
         .description('Retrieve Parameters from Parameter Store')
-        .action(() => {
-            ssm.getParameters();
+        .action(async () => {
+            await ssm.getParameters();
         });
     commander
         .command('get-param <parameterName>')

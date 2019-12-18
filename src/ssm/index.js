@@ -26,22 +26,32 @@ const getParameter = (parameterName) => {
 /**
  * List all parameter store items.
  */
-const getParameters = () => {
-    ssm.describeParameters().promise().then((data) => {
-        console.table(
+const getParameters = async () => {
+    let ssmParameters = new Array();
+    nextToken = null;
+    do {
+        let params = {
+            MaxResults: 10,
+            NextToken: nextToken,
+        };
+
+        await ssm.describeParameters(params).promise().then((data) => {
+            nextToken = data['NextToken'] ? data['NextToken'] : -1;
             data['Parameters'].map((param) => {
-                return {
+                ssmParameters.push({
                     'Name': param['Name'],
                     'Type': param['Type'],
-                }
-            })
-        )
-    },
-    (err) => {
-        if (err)
-            console.error(err.message);
-    });
-}
+                });
+            });
+        },
+        (err) => {
+            if (err)
+                console.error(err.message);
+        }); 
+    } while (nextToken != -1);
+
+    console.table(ssmParameters);
+};
 
 module.exports = {
     getParameter: getParameter,

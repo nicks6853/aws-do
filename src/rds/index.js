@@ -59,26 +59,23 @@ const describeDBInstance = (dbInstanceIdentifier) => {
  * Creates a snapshot of the database specified using the dbInstanceIdentifier param.
  * @param {String} dbInstanceIdentifier 
  */
-const createDBSnapshot = async (dbInstanceIdentifier) => {
+const createDBSnapshot = (dbInstanceIdentifier) => {
     let dbSnapshotIdentifier = `${dbInstanceIdentifier}-${uuid.v4()}`;
     let params = {
         DBInstanceIdentifier: dbInstanceIdentifier,
         DBSnapshotIdentifier: dbSnapshotIdentifier,
     };
 
-    await rds.createDBSnapshot(params).promise().then(async (data) => {
-        let status = await describeDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
+    rds.createDBSnapshot(params).promise().then(async (data) => {
+        let response = await getDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
         process.stdout.write(`Creating DB Snapshot: ${dbSnapshotIdentifier}`);
         
-        while (status !== 'available') {
+        while (response['Status'] !== 'available') {
             process.stdout.write('.');
-            if (!status) {
-                console.error("\nProblem during creation of the snapshot");
-                return;
-            }
+            response = await getDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
             await utils.sleep(3000);
-            status = await describeDBSnapshotStatus(dbInstanceIdentifier, dbSnapshotIdentifier);
         }
+        console.log('\nDone!');
     },
     (err) => {
         console.log(err.message);
@@ -90,25 +87,25 @@ const createDBSnapshot = async (dbInstanceIdentifier) => {
  * @param {String} dbInstanceIdentifier DB Instance Identifier
  * @param {String} dbSnapshotIdentifier DB Snapshot Identifier
  */
-const describeDBSnapshotStatus = async (dbInstanceIdentifier, dbSnapshotIdentifier) => {
+const getDBSnapshotStatus = (dbInstanceIdentifier, dbSnapshotIdentifier) => {
     let params = {
         DBInstanceIdentifier: dbInstanceIdentifier,
         DBSnapshotIdentifier: dbSnapshotIdentifier,
     };
-    let status = null;
-    await rds.describeDBSnapshots(params).promise().then((data) => {
-        status = data['DBSnapshots'][0]['Status'];
-    },
-    (err) => {
-        if (err)
-            console.error(err.message);
+    return new Promise((resolve, reject) => {
+        rds.describeDBSnapshots(params).promise().then((data) => {
+            resolve({ 'Status': data['DBSnapshots'][0]['Status'] });
+        },
+        (err) => {
+            if (err)
+                console.error(err.message);
+                reject({ 'Status': 'error', 'Message': err.message });
+        });
     });
-    return status;
-}
+};
 
 module.exports = {
     createDBSnapshot: createDBSnapshot,
     describeDBInstance: describeDBInstance,
     describeDBInstances: describeDBInstances,
-    describeDBSnapshotStatus: describeDBSnapshotStatus,
 };

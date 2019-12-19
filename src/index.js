@@ -57,6 +57,12 @@ const main = async () => {
             ec2.getInstances(filter);
         });
     commander
+        .command('ebs-snapshot <instanceId> [description]')
+        .description('Take a snapshot of the EBS volume attached to an instance.')
+        .action((instanceId, description) => {
+            ec2.ebsSnapshot(instanceId, description);
+        });
+    commander
         .command('session <instanceId>')
         .description('SSH into an instance')
         .action((instanceId) => {

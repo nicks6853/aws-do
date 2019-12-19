@@ -8,3 +8,7 @@ Copy the binary to your bin/ dir: `cp ./bin/aws-do /usr/local/bin/`
 
 ## Developers / Contributors
 Nicolas Saulnier
+
+## License
+[MIT](LICENSE.md)
+

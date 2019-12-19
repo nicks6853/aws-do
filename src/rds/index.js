@@ -9,7 +9,8 @@ const rds = new AWS.RDS({region: config.region});
  * List all the RDS Instances.
  */
 const describeDBInstances = () => {
-    rds.describeDBInstances().promise().then((data) => {
+    let params = { MaxRecords: 100 };
+    rds.describeDBInstances(params).promise().then((data) => {
         console.table(
             data['DBInstances'].map(rdsInstance => {
                 return {

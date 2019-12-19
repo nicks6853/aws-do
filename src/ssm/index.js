@@ -50,7 +50,7 @@ const getParameters = async () => {
             if (err)
                 console.error(err.message);
         }); 
-    } while (nextToken != -1);
+    } while (nextToken !== -1);
 
     console.table(ssmParameters);
 };

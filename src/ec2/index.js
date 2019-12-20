@@ -19,14 +19,17 @@ const getInstances = (filter) => {
         const instances = new Array();
         data['Reservations'].map((reservation) => {
             reservation['Instances'].map((instance) => {
-                let instanceName = instance['Tags'].filter((item) => item['Key'] == 'Name')[0]['Value'];
-                instances.push({
-                    'Name': instanceName ? instanceName : null,
-                    'InstanceId': instance['InstanceId'],
-                    'InstanceType': instance['InstanceType'],
-                    'PublicDnsName': instance['PublicDnsName'] ? instance['PublicDnsName'] : null,
-                    'PrivateIpAddress': instance['PrivateIpAddress'] ? instance['PrivateIpAddress'] : null,
-                });
+                try {
+                    let instanceName = instance['Tags'].filter((item) => item['Key'] == 'Name')[0]['Value'];
+                    instances.push({
+                        'Name': instanceName ? instanceName : null,
+                        'InstanceId': instance['InstanceId'],
+                        'InstanceType': instance['InstanceType'],
+                        'PublicDnsName': instance['PublicDnsName'] ? instance['PublicDnsName'] : null,
+                        'PrivateIpAddress': instance['PrivateIpAddress'] ? instance['PrivateIpAddress'] : null,
+                    });
+                }
+                catch (exception) {}
             });
         });
         instances.sort((a, b) => {

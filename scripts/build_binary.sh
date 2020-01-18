@@ -12,6 +12,6 @@ fi
 
 cd bin
 rm -f './aws-do'
-pkg ../ --targets node12-macos-x64
+pkg ../ --targets node12-linux-x64
 cd -
 echo "Done."
